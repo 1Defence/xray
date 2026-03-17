@@ -34,7 +34,7 @@ import javax.inject.Inject;
 
 import java.awt.*;
 
-import static com.example.XRayConfig.HighlightStyle;
+import static com.example.XRayPlugin.HighlightStyle;
 
 public class XRayOverlay extends Overlay
 {
@@ -59,25 +59,21 @@ public class XRayOverlay extends Overlay
 
     public Dimension render(Graphics2D graphics)
     {
-
-        for(NPC npc : plugin.trackedNpcs){
+        for(NPC npc : plugin.outlineNpcs){
             if(npc == null)
                 continue;
-
-            switch (plugin.highlightStyle){
-                case OUTLINE:
-                    renderOutline(npc);
-                    break;
-                case CLICKBOX:
-                    renderShape(graphics, npc, HighlightStyle.CLICKBOX, plugin.outlineColor);
-                    break;
-                case HULL:
-                    renderShape(graphics, npc, HighlightStyle.HULL, plugin.hullColor);
-                    break;
-            }
-
+            renderOutline(npc);
         }
-
+        for(NPC npc : plugin.clickboxNpcs){
+            if(npc == null)
+                continue;
+            renderShape(graphics, npc, HighlightStyle.CLICKBOX, plugin.clickboxColor);
+        }
+        for(NPC npc : plugin.hullNpcs){
+            if(npc == null)
+                continue;
+            renderShape(graphics, npc, HighlightStyle.HULL, plugin.hullColor);
+        }
         return null;
     }
 

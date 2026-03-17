@@ -38,8 +38,6 @@ public interface XRayConfig extends Config
 {
 	String GROUP = "xray";
 
-	enum HighlightStyle { OUTLINE,CLICKBOX,HULL}
-
 	@ConfigSection(name="Outline Style", description="Outline settings", position=1, closedByDefault=false)
 	String outlineSection = "outlineStyle";
 
@@ -51,29 +49,19 @@ public interface XRayConfig extends Config
 
 	@ConfigItem(
 			position = 0,
-			keyName = "transparentNpcs",
-			name = "Transparent Npcs",
-			description = "Hidden npcs that will render as a highlight"
+			keyName = "outlineNpcs",
+			name = "Outline Npcs",
+			description = "Hidden npcs that will render as an outline",
+			section = outlineSection
 	)
 	default String getOutlineNpcs()
 	{
 		return "";
 	}
 
-	@ConfigItem(
-			position = 1,
-			keyName = "highlightStyle",
-			name = "Highlight Style",
-			description = "How the highlight of hidden npcs should be rendered"
-	)
-	default HighlightStyle getHighlightStyle()
-	{
-		return HighlightStyle.OUTLINE;
-	}
-
 	@Alpha
 	@ConfigItem(
-			position = 2,
+			position = 1,
 			keyName = "outlineColor",
 			name = "Outline color",
 			description = "Color of the npc highlight outline.",
@@ -85,7 +73,7 @@ public interface XRayConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 3,
+			position = 2,
 			keyName = "borderWidth",
 			name = "Border width",
 			description = "Width of the highlighted npc border.",
@@ -102,7 +90,7 @@ public interface XRayConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 4,
+			position = 3,
 			keyName = "outlineFeather",
 			name = "Outline feather",
 			description = "Specify between 0-4 how much of the model outline should be faded.",
@@ -115,6 +103,18 @@ public interface XRayConfig extends Config
 	default int outlineFeather()
 	{
 		return 0;
+	}
+
+	@ConfigItem(
+			position = 4,
+			keyName = "clickboxNpcs",
+			name = "Clickbox Npcs",
+			description = "Hidden npcs that will render as a clickbox",
+			section = clickboxSection
+	)
+	default String getClickboxNpcs()
+	{
+		return "";
 	}
 
 	@Alpha
@@ -147,9 +147,21 @@ public interface XRayConfig extends Config
 		return 1;
 	}
 
-	@Alpha
 	@ConfigItem(
 			position = 7,
+			keyName = "hullNpcs",
+			name = "Hull Npcs",
+			description = "Hidden npcs that will render as a hull",
+			section = hullSection
+	)
+	default String getHullNpcs()
+	{
+		return "";
+	}
+
+	@Alpha
+	@ConfigItem(
+			position = 8,
 			keyName = "hullColor",
 			name = "Hull Color",
 			description = "Color of the npc highlight hull.",
@@ -161,7 +173,7 @@ public interface XRayConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 8,
+			position = 9,
 			keyName = "hullWidth",
 			name = "Hull width",
 			description = "Width of the hull line",
