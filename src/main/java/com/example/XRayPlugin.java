@@ -45,7 +45,10 @@ import net.runelite.client.util.Text;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.example.RenderTypes.HighlightStyle;
 
@@ -80,9 +83,7 @@ public class XRayPlugin extends Plugin
 	private List<String> clickboxNames = new ArrayList<>();
 	private List<String> hullNames = new ArrayList<>();
 
-	public List<NPC> outlineNpcs = new ArrayList<>();
-	public List<NPC> clickboxNpcs = new ArrayList<>();
-	public List<NPC> hullNpcs = new ArrayList<>();
+	public Map<NPC,RenderTypes> trackedNpcs = new HashMap<>();
 
 	public Color outlineColor;
 	public int outlineWidth;
@@ -94,6 +95,8 @@ public class XRayPlugin extends Plugin
 	public float hullWidth;
 
 	public HighlightStyle highlightStyle;
+
+	private final Set<String> LIST_CONFIGS = Set.of("outlineNpcs","clickboxNpcs","hullNpcs");
 
 	@Provides
 	XRayConfig provideConfig(ConfigManager configManager)
@@ -113,7 +116,7 @@ public class XRayPlugin extends Plugin
 				if (renderable instanceof NPC)
 				{
 					NPC npc = (NPC)renderable;
-					if(outlineNpcs.contains(npc) || clickboxNpcs.contains(npc) || hullNpcs.contains(npc)){
+					if(trackedNpcs.containsKey(npc)){
 						return false;
 					}
 				}
@@ -153,16 +156,11 @@ public class XRayPlugin extends Plugin
 	@Subscribe
 	public void onNpcDespawned(NpcDespawned e){
 		NPC npc = e.getNpc();
-		if(outlineNpcs.contains(npc))
-			outlineNpcs.remove(npc);
-		if(clickboxNpcs.contains(npc))
-			clickboxNpcs.remove(npc);
-		if(hullNpcs.contains(npc))
-			hullNpcs.remove(npc);
+		trackedNpcs.remove(npc);
 	}
 
 	/**
-	 * Repopulate tracked npcs if needed
+	 * Repopulate tracked npcs if eneded
 	 */
 	@Subscribe
 	public void onConfigChanged(ConfigChanged configChanged)
@@ -173,14 +171,11 @@ public class XRayPlugin extends Plugin
 		}
 
 		CacheConfigs();
-
-		if(configChanged.getKey().equals("outlineNpcs") || configChanged.getKey().equals("clickboxNpcs") || configChanged.getKey().equals("hullNpcs"))
+		if(LIST_CONFIGS.contains(configChanged.getKey()))
 		{
 			clientThread.invokeLater(() ->
 			{
-				outlineNpcs.clear();
-				clickboxNpcs.clear();
-				hullNpcs.clear();
+				trackedNpcs.clear();
 				for (NPC npc : client.getTopLevelWorldView().npcs())
 				{
 					if (npc == null)
@@ -206,15 +201,21 @@ public class XRayPlugin extends Plugin
 
 	/**start tracking npc to later highlight in the overlay*/
 	void trackNPC(NPC npc){
-		if(!outlineNpcs.contains(npc) && matchContained(npc, outlineNames)){
-			outlineNpcs.add(npc);
-		}
-		if(!clickboxNpcs.contains(npc) && matchContained(npc, clickboxNames)){
-			clickboxNpcs.add(npc);
-		}
-		if(!hullNpcs.contains(npc) && matchContained(npc, hullNames)){
-			hullNpcs.add(npc);
-		}
+		if(trackedNpcs.containsKey(npc))
+			return;
+		RenderTypes renderTypes = new RenderTypes();
+
+		if(matchContained(npc, outlineNames))
+			renderTypes.setStyle(HighlightStyle.OUTLINE,true);
+		if(matchContained(npc, clickboxNames))
+			renderTypes.setStyle(HighlightStyle.CLICKBOX,true);
+		if(matchContained(npc, hullNames))
+			renderTypes.setStyle(HighlightStyle.HULL,true);
+
+		if(renderTypes.noRender())
+			return;
+
+		trackedNpcs.put(npc,renderTypes);
 	}
 
 	/**iterate through search terms to see if npc is a valid highlight*/

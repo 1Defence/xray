@@ -33,7 +33,7 @@ import javax.inject.Inject;
 
 import java.awt.*;
 
-import static com.example.RenderTypes.HighlightStyle;
+import static com.example.RenderTypes.HighlightStyle.*;
 
 public class XRayOverlay extends Overlay
 {
@@ -55,21 +55,16 @@ public class XRayOverlay extends Overlay
 
     public Dimension render(Graphics2D graphics)
     {
-        for(NPC npc : plugin.outlineNpcs){
+        plugin.trackedNpcs.forEach((npc, rt) -> {
             if(npc == null)
-                continue;
-            renderOutline(npc);
-        }
-        for(NPC npc : plugin.clickboxNpcs){
-            if(npc == null)
-                continue;
-            renderShape(graphics, npc, HighlightStyle.CLICKBOX, plugin.clickboxColor);
-        }
-        for(NPC npc : plugin.hullNpcs){
-            if(npc == null)
-                continue;
-            renderShape(graphics, npc, HighlightStyle.HULL, plugin.hullColor);
-        }
+                return;
+            if(rt.render(OUTLINE))
+                renderOutline(npc);
+            if(rt.render(CLICKBOX))
+                renderShape(graphics, npc, CLICKBOX, plugin.clickboxColor);
+            if(rt.render(HULL))
+                renderShape(graphics, npc, HULL, plugin.hullColor);
+        });
         return null;
     }
 
@@ -84,7 +79,7 @@ public class XRayOverlay extends Overlay
     }
 
     /**render an npcs hull or clickbox*/
-    public void renderShape(Graphics2D graphics, NPC npc, HighlightStyle style, Color color)
+    public void renderShape(Graphics2D graphics, NPC npc, RenderTypes.HighlightStyle style, Color color)
     {
         LocalPoint lp = npc.getLocalLocation();
         if(lp == null)

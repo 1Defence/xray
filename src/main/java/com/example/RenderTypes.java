@@ -20,10 +20,14 @@ public class RenderTypes
         }
     }
 
-    public boolean hasStyle(HighlightStyle style) {
+    public boolean render(HighlightStyle style) {
         if (style == null) return false;
         int mask = 1 << style.ordinal();
         return (flags & mask) != 0;
+    }
+
+    public boolean noRender(){
+        return flags == 0;
     }
 
 }
