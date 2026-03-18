@@ -54,7 +54,7 @@ public interface XRayConfig extends Config
 			description = "Hidden npcs that will render as an outline",
 			section = outlineSection
 	)
-	default String getOutlineNpcs()
+	default String outlineNpcs()
 	{
 		return "";
 	}
@@ -74,9 +74,9 @@ public interface XRayConfig extends Config
 
 	@ConfigItem(
 			position = 2,
-			keyName = "borderWidth",
-			name = "Border width",
-			description = "Width of the highlighted npc border.",
+			keyName = "outlineWidth",
+			name = "Outline width",
+			description = "Width of the outline",
 			section = outlineSection
 	)
 	@Range(
@@ -84,7 +84,7 @@ public interface XRayConfig extends Config
 			max = 4
 	)
 
-	default int borderWidth()
+	default int outlineWidth()
 	{
 		return 2;
 	}
@@ -112,7 +112,7 @@ public interface XRayConfig extends Config
 			description = "Hidden npcs that will render as a clickbox",
 			section = clickboxSection
 	)
-	default String getClickboxNpcs()
+	default String clickboxNpcs()
 	{
 		return "";
 	}
@@ -154,7 +154,7 @@ public interface XRayConfig extends Config
 			description = "Hidden npcs that will render as a hull",
 			section = hullSection
 	)
-	default String getHullNpcs()
+	default String hullNpcs()
 	{
 		return "";
 	}

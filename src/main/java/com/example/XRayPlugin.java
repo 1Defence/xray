@@ -250,12 +250,12 @@ public class XRayPlugin extends Plugin
 	/**cache config values*/
 	public void CacheConfigs()
 	{
-		outlineNames = parseNpcList(config.getOutlineNpcs());
-		clickboxNames = parseNpcList(config.getClickboxNpcs());
-		hullNames = parseNpcList(config.getHullNpcs());
+		outlineNames = parseNpcList(config.outlineNpcs());
+		clickboxNames = parseNpcList(config.clickboxNpcs());
+		hullNames = parseNpcList(config.hullNpcs());
 
 		outlineColor = config.outlineColor();
-		outlineWidth = config.borderWidth();
+		outlineWidth = config.outlineWidth();
 		outlineFeather = config.outlineFeather();
 		clickboxColor = config.clickboxColor();
 		hullColor = config.hullColor();
