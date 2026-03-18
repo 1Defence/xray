@@ -10,9 +10,7 @@ public class RenderTypes
     }
 
     public boolean render(HighlightStyle style) {
-        if (style == null) return false;
-        int mask = 1 << style.ordinal();
-        return (flags & mask) != 0;
+        return (flags & 1 << style.ordinal()) != 0;
     }
 
     public boolean noRender(){
