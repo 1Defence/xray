@@ -47,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.example.RenderTypes.HighlightStyle;
+
 @PluginDescriptor(
 		name = "XRay",
 		description = "Select npcs are transparent, but clickable",
@@ -73,7 +75,6 @@ public class XRayPlugin extends Plugin
 	@Inject
 	private RenderCallbackManager renderCallbackManager;
 
-	enum HighlightStyle { OUTLINE,CLICKBOX,HULL}
 
 	private List<String> outlineNames = new ArrayList<>();
 	private List<String> clickboxNames = new ArrayList<>();

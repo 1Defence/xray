@@ -26,7 +26,6 @@ package com.example;
 
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.client.game.NpcUtil;
 import net.runelite.client.ui.overlay.*;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
@@ -34,7 +33,7 @@ import javax.inject.Inject;
 
 import java.awt.*;
 
-import static com.example.XRayPlugin.HighlightStyle;
+import static com.example.RenderTypes.HighlightStyle;
 
 public class XRayOverlay extends Overlay
 {
@@ -46,9 +45,6 @@ public class XRayOverlay extends Overlay
 
     @Inject
     private ModelOutlineRenderer modelOutlineRenderer;
-
-    @Inject
-    private NpcUtil npcUtil;
 
     @Inject
     private XRayOverlay()
@@ -77,7 +73,7 @@ public class XRayOverlay extends Overlay
         return null;
     }
 
-
+    /**render an npcs outline*/
     public void renderOutline(NPC npc)
     {
         NPCComposition npcComposition = npc.getTransformedComposition();
@@ -87,6 +83,7 @@ public class XRayOverlay extends Overlay
         }
     }
 
+    /**render an npcs hull or clickbox*/
     public void renderShape(Graphics2D graphics, NPC npc, HighlightStyle style, Color color)
     {
         LocalPoint lp = npc.getLocalLocation();
