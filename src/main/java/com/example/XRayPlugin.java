@@ -94,8 +94,6 @@ public class XRayPlugin extends Plugin
 	public Color hullColor;
 	public float hullWidth;
 
-	public HighlightStyle highlightStyle;
-
 	private final Set<String> LIST_CONFIGS = Set.of("outlineNpcs","clickboxNpcs","hullNpcs");
 
 	@Provides
@@ -206,11 +204,11 @@ public class XRayPlugin extends Plugin
 		RenderTypes renderTypes = new RenderTypes();
 
 		if(matchContained(npc, outlineNames))
-			renderTypes.setStyle(HighlightStyle.OUTLINE,true);
+			renderTypes.setStyle(HighlightStyle.OUTLINE);
 		if(matchContained(npc, clickboxNames))
-			renderTypes.setStyle(HighlightStyle.CLICKBOX,true);
+			renderTypes.setStyle(HighlightStyle.CLICKBOX);
 		if(matchContained(npc, hullNames))
-			renderTypes.setStyle(HighlightStyle.HULL,true);
+			renderTypes.setStyle(HighlightStyle.HULL);
 
 		if(renderTypes.noRender())
 			return;
