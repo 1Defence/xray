@@ -105,6 +105,34 @@ public class XRayPlugin extends Plugin
 	private final RenderCallback renderCallback = new RenderCallback()
 	{
 		@Override
+		public boolean addEntity(Renderable renderable, boolean ui)
+		{
+			// Always allow projectiles (arrows, spells, etc.) to render
+			if (renderable instanceof Projectile)
+			{
+				return true;
+			}
+
+			// Always allow graphics objects (attack animations, spell splashes, etc.) to render
+			if (renderable instanceof GraphicsObject)
+			{
+				return true;
+			}
+
+			// Hide tracked NPCs (make them transparent)
+			if (renderable instanceof NPC)
+			{
+				NPC npc = (NPC) renderable;
+				if (trackedNpcs.containsKey(npc))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		@Override
 		public boolean drawObject(Scene scene, TileObject object)
 		{
 			if (object instanceof GameObject)
@@ -113,8 +141,9 @@ public class XRayPlugin extends Plugin
 
 				if (renderable instanceof NPC)
 				{
-					NPC npc = (NPC)renderable;
-					if(trackedNpcs.containsKey(npc)){
+					NPC npc = (NPC) renderable;
+					if (trackedNpcs.containsKey(npc))
+					{
 						return false;
 					}
 				}
