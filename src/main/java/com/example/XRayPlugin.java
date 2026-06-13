@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.client.callback.ClientThread;
@@ -158,6 +159,20 @@ public class XRayPlugin extends Plugin
 	public void onNpcDespawned(NpcDespawned e){
 		NPC npc = e.getNpc();
 		trackedNpcs.remove(npc);
+	}
+
+	/**
+	 * Re-track an npc if its composition changes, as it may no longer fall under users filters.
+	 */
+	@Subscribe
+	public void onNpcChanged(NpcChanged e){
+		NPC npc = e.getNpc();
+
+		//remove if already present
+		trackedNpcs.remove(npc);
+
+		//attempt to track changed npc
+		trackNPC(npc);
 	}
 
 	/**
