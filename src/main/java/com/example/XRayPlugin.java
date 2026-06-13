@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.client.callback.ClientThread;
@@ -96,6 +97,8 @@ public class XRayPlugin extends Plugin
 
 	private final Set<String> LIST_CONFIGS = Set.of("outlineNpcs","clickboxNpcs","hullNpcs");
 
+	private boolean loginPending = false;
+
 	@Provides
 	XRayConfig provideConfig(ConfigManager configManager)
 	{
@@ -158,7 +161,43 @@ public class XRayPlugin extends Plugin
 	}
 
 	/**
-	 * Repopulate tracked npcs if eneded
+	 * Requests a reset when a potentially invalid scenario occurs on login/hop
+	 * this is needed because on login/world hop npc spawn is re-triggered but npc despawn isn't
+	 * npc index can instead be tracked as opposed to NPC, but overhead of querying the cached list in render is not worth it
+	 */
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged state){
+
+		if(state.getGameState() == GameState.LOGGING_IN || state.getGameState() == GameState.HOPPING)
+		{
+			loginPending = true;
+			return;
+		}
+
+		if(loginPending && state.getGameState() == GameState.LOGGED_IN){
+			loginPending = false;
+			refreshTracking();
+		}
+	}
+
+	/**
+	 * Repopulate tracked npcs
+	 */
+	public void refreshTracking(){
+		clientThread.invokeLater(() ->
+		{
+			trackedNpcs.clear();
+			for (NPC npc : client.getTopLevelWorldView().npcs())
+			{
+				if (npc == null)
+					continue;
+				trackNPC(npc);
+			}
+		});
+	}
+
+	/**
+	 * Checks if tracking needs a reset
 	 */
 	@Subscribe
 	public void onConfigChanged(ConfigChanged configChanged)
@@ -171,16 +210,7 @@ public class XRayPlugin extends Plugin
 		CacheConfigs();
 		if(LIST_CONFIGS.contains(configChanged.getKey()))
 		{
-			clientThread.invokeLater(() ->
-			{
-				trackedNpcs.clear();
-				for (NPC npc : client.getTopLevelWorldView().npcs())
-				{
-					if (npc == null)
-						continue;
-					trackNPC(npc);
-				}
-			});
+			refreshTracking();
 		}
 
 	}
