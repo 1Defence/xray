@@ -2,7 +2,7 @@ package com.example;
 
 public class RenderTypes
 {
-    enum HighlightStyle { OUTLINE,CLICKBOX,HULL}
+    public enum HighlightStyle { OUTLINE,CLICKBOX,HULL}
     private int flags = 0;
 
     public void setStyle(HighlightStyle style){

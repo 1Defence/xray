@@ -47,6 +47,9 @@ public interface XRayConfig extends Config
 	@ConfigSection(name="Hull Style", description="Hull settings", position=3, closedByDefault=true)
 	String hullSection = "hullStyle";
 
+	@ConfigSection(name="Player Style", description="Player settings", position=4, closedByDefault=true)
+	String playerSection = "playerStyle";
+
 	@ConfigItem(
 			position = 0,
 			keyName = "outlineNpcs",
@@ -187,6 +190,137 @@ public interface XRayConfig extends Config
 	default int hullWidth()
 	{
 		return 1;
+	}
+
+	@Alpha
+	@ConfigItem(
+			position = 10,
+			keyName = "localPlayerColor",
+			name = "Local Player Color",
+			description = "Color of the Local player highlight.",
+			section = playerSection
+	)
+	default Color localPlayerColor()
+	{
+		return new Color(0, 255, 255, 155);
+	}
+
+	@Alpha
+	@ConfigItem(
+			position = 11,
+			keyName = "otherPlayersColor",
+			name = "Other Players Color",
+			description = "Color of other players highlight.",
+			section = playerSection
+	)
+	default Color otherPlayersColor()
+	{
+		return new Color(0, 255, 255, 155);
+	}
+
+	@ConfigItem(
+			position = 12,
+			keyName = "playerHighlightStyle",
+			name = "Highlight Style",
+			description = "Style to highlight players",
+			section = playerSection
+	)
+
+	default RenderTypes.HighlightStyle playerHighlightStyle()
+	{
+		return RenderTypes.HighlightStyle.OUTLINE;
+	}
+
+	@ConfigItem(
+			position = 13,
+			keyName = "highlightLocalPlayer",
+			name = "Highlight Local",
+			description = "Highlights local player",
+			section = playerSection
+	)
+
+	default boolean highlightLocalPlayer()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			position = 13,
+			keyName = "localOutlineWidth",
+			name = "Local width",
+			description = "Width of the local players outline",
+			section = playerSection
+	)
+	@Range(
+			min = 1,
+			max = 4
+	)
+
+	default int localOutlineWidth()
+	{
+		return 2;
+	}
+
+	@ConfigItem(
+			position = 14,
+			keyName = "localOutlineFeather",
+			name = "Local feather",
+			description = "Specify between 0-4 how much of the model outline should be faded for the local player.",
+			section = playerSection
+	)
+	@Range(
+			min = 0,
+			max = 4
+	)
+	default int localOutlineFeather()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+			position = 15,
+			keyName = "highlightOtherPlayers",
+			name = "Highlight Others",
+			description = "Highlights all other players (except the local player) indiscriminately",
+			section = playerSection
+	)
+
+	default boolean highlightOtherPlayers()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			position = 16,
+			keyName = "othersOutlineWidth",
+			name = "Others width",
+			description = "Width of other players outline",
+			section = playerSection
+	)
+	@Range(
+			min = 1,
+			max = 4
+	)
+
+	default int othersOutlineWidth()
+	{
+		return 1;
+	}
+
+	@ConfigItem(
+			position = 17,
+			keyName = "othersOutlineFeather",
+			name = "Others feather",
+			description = "Specify between 0-4 how much of the model outline should be faded for other players.",
+			section = playerSection
+	)
+	@Range(
+			min = 0,
+			max = 4
+	)
+	default int othersOutlineFeather()
+	{
+		return 0;
 	}
 
 }

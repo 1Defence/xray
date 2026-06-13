@@ -61,10 +61,40 @@ public class XRayOverlay extends Overlay
             if(rt.render(OUTLINE))
                 renderOutline(npc);
             if(rt.render(CLICKBOX))
-                renderShape(graphics, npc, CLICKBOX, plugin.clickboxColor);
+                renderShape(graphics, npc, CLICKBOX, plugin.clickboxColor,plugin.clickboxWidth);
             if(rt.render(HULL))
-                renderShape(graphics, npc, HULL, plugin.hullColor);
+                renderShape(graphics, npc, HULL, plugin.hullColor,plugin.hullWidth);
         });
+
+        if(plugin.highlightOtherPlayers)
+        {
+            plugin.trackedPlayers.forEach(player ->
+            {
+                if (player == null)
+                    return;
+                if (plugin.playerRenderType.render(OUTLINE))
+                    renderOutline(player, plugin.otherPlayersColor,plugin.othersOutlineWidth,plugin.othersOutlineFeather);
+                if (plugin.playerRenderType.render(CLICKBOX))
+                    renderShape(graphics, player, CLICKBOX, plugin.otherPlayersColor,plugin.othersOutlineWidth);
+                if (plugin.playerRenderType.render(HULL))
+                    renderShape(graphics, player, HULL, plugin.otherPlayersColor,plugin.othersOutlineWidth);
+            });
+        }
+
+        if(plugin.highlightLocalPlayer)
+        {
+            Player localPlayer = client.getLocalPlayer();
+            if(localPlayer != null)
+            {
+                if (plugin.playerRenderType.render(OUTLINE))
+                    renderOutline(localPlayer, plugin.localPlayerColor, plugin.localOutlineWidth, plugin.localOutlineFeather);
+                if (plugin.playerRenderType.render(CLICKBOX))
+                    renderShape(graphics, localPlayer, CLICKBOX, plugin.localPlayerColor,plugin.localOutlineWidth);
+                if (plugin.playerRenderType.render(HULL))
+                    renderShape(graphics, localPlayer, HULL, plugin.localPlayerColor,plugin.localOutlineWidth);
+            }
+        }
+
         return null;
     }
 
@@ -78,25 +108,32 @@ public class XRayOverlay extends Overlay
         }
     }
 
-    /**render an npcs hull or clickbox*/
-    public void renderShape(Graphics2D graphics, NPC npc, RenderTypes.HighlightStyle style, Color color)
+    /**render a Players outline*/
+    public void renderOutline(Player player, Color color, int outlineWidth, int outlineFeather)
     {
-        LocalPoint lp = npc.getLocalLocation();
+        PlayerComposition playerComposition = player.getPlayerComposition();
+        if (playerComposition != null)
+        {
+            modelOutlineRenderer.drawOutline(player,outlineWidth,color,outlineFeather);
+        }
+    }
+
+    /**render an actors hull or clickbox*/
+    public void renderShape(Graphics2D graphics, Actor actor, RenderTypes.HighlightStyle style, Color color, float strokeWidth)
+    {
+        LocalPoint lp = actor.getLocalLocation();
         if(lp == null)
             return;
 
         Shape shape = null;
-        float strokeWidth = 1f;
 
         switch (style){
             case CLICKBOX:
-                shape = Perspective.getClickbox(client, npc.getWorldView(), npc.getModel(), npc.getCurrentOrientation(), lp.getX(), lp.getY(),
-                        Perspective.getTileHeight(client, lp, npc.getWorldLocation().getPlane()));
-                strokeWidth = plugin.clickboxWidth;
+                shape = Perspective.getClickbox(client, actor.getWorldView(), actor.getModel(), actor.getCurrentOrientation(), lp.getX(), lp.getY(),
+                        Perspective.getTileHeight(client, lp, actor.getWorldLocation().getPlane()));
                 break;
             case HULL:
-                shape = npc.getConvexHull();
-                strokeWidth = plugin.hullWidth;
+                shape = actor.getConvexHull();
                 break;
         }
 

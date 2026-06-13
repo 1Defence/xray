@@ -33,6 +33,8 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.events.PlayerDespawned;
+import net.runelite.api.events.PlayerSpawned;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
@@ -87,6 +89,8 @@ public class XRayPlugin extends Plugin
 
 	public Map<NPC,RenderTypes> trackedNpcs = new HashMap<>();
 
+	public List<Player> trackedPlayers = new ArrayList<>();
+
 	public Color outlineColor;
 	public int outlineWidth;
 	public int outlineFeather;
@@ -95,6 +99,21 @@ public class XRayPlugin extends Plugin
 	public float clickboxWidth;
 	public Color hullColor;
 	public float hullWidth;
+
+	public Color localPlayerColor;
+	public Color otherPlayersColor;
+
+	public RenderTypes playerRenderType;
+
+	public boolean highlightLocalPlayer;
+	public boolean highlightOtherPlayers;
+
+	public int localOutlineWidth;
+	public int localOutlineFeather;
+
+	public int othersOutlineWidth;
+	public int othersOutlineFeather;
+
 
 	private final Set<String> LIST_CONFIGS = Set.of("outlineNpcs","clickboxNpcs","hullNpcs");
 
@@ -119,6 +138,16 @@ public class XRayPlugin extends Plugin
 				{
 					NPC npc = (NPC)renderable;
 					if(trackedNpcs.containsKey(npc)){
+						return false;
+					}
+				}
+				if (renderable instanceof Player)
+				{
+					Player player = (Player)renderable;
+					if(player == client.getLocalPlayer() && config.highlightLocalPlayer()){
+						return false;
+					}
+					if(player != client.getLocalPlayer() && config.highlightOtherPlayers()){
 						return false;
 					}
 				}
@@ -148,13 +177,13 @@ public class XRayPlugin extends Plugin
 		});
 	}
 
-	/**remove tracking for given npc*/
+	/**attempt to track given npc*/
 	@Subscribe
 	public void onNpcSpawned(NpcSpawned e){
 		trackNPC(e.getNpc());
 	}
 
-	/**attempt to track given npc*/
+	/**remove tracking for given npc*/
 	@Subscribe
 	public void onNpcDespawned(NpcDespawned e){
 		NPC npc = e.getNpc();
@@ -175,6 +204,21 @@ public class XRayPlugin extends Plugin
 		trackNPC(npc);
 	}
 
+	/**attempt to track given player, excludes local player*/
+	@Subscribe
+	public void onPlayerSpawned(PlayerSpawned e){
+		Player player = e.getPlayer();
+		if(player == client.getLocalPlayer())
+			return;
+		trackedPlayers.add(player);
+	}
+
+	/**remove tracking for given player*/
+	@Subscribe
+	public void onPlayerDespawned(PlayerDespawned e){
+		trackedPlayers.remove(e.getPlayer());
+	}
+
 	/**
 	 * Requests a reset when a potentially invalid scenario occurs on login/hop
 	 * this is needed because on login/world hop npc spawn is re-triggered but npc despawn isn't
@@ -191,14 +235,15 @@ public class XRayPlugin extends Plugin
 
 		if(loginPending && state.getGameState() == GameState.LOGGED_IN){
 			loginPending = false;
-			refreshTracking();
+			refreshTrackingNpcs();
+			refreshTrackingPlayers();
 		}
 	}
 
 	/**
 	 * Repopulate tracked npcs
 	 */
-	public void refreshTracking(){
+	public void refreshTrackingNpcs(){
 		clientThread.invokeLater(() ->
 		{
 			trackedNpcs.clear();
@@ -207,6 +252,24 @@ public class XRayPlugin extends Plugin
 				if (npc == null)
 					continue;
 				trackNPC(npc);
+			}
+		});
+	}
+
+	/**
+	 * Repopulate tracked players
+	 */
+	public void refreshTrackingPlayers(){
+		clientThread.invokeLater(() ->
+		{
+			trackedPlayers.clear();
+			for (Player player : client.getTopLevelWorldView().players())
+			{
+				if (player == null)
+					continue;
+				if (player == client.getLocalPlayer())
+					continue;
+				trackedPlayers.add(player);
 			}
 		});
 	}
@@ -225,7 +288,7 @@ public class XRayPlugin extends Plugin
 		CacheConfigs();
 		if(LIST_CONFIGS.contains(configChanged.getKey()))
 		{
-			refreshTracking();
+			refreshTrackingNpcs();
 		}
 
 	}
@@ -307,6 +370,21 @@ public class XRayPlugin extends Plugin
 
 		clickboxWidth = config.clickboxWidth()*0.5f;//0.5-5 -- cant range a float/double
 		hullWidth = config.hullWidth()*0.5f;//0.5-5 -- cant range a float/double
+
+		playerRenderType = new RenderTypes();
+		playerRenderType.setStyle(config.playerHighlightStyle());
+
+		localPlayerColor = config.localPlayerColor();
+		otherPlayersColor = config.otherPlayersColor();
+
+		highlightLocalPlayer = config.highlightLocalPlayer();
+		highlightOtherPlayers = config.highlightOtherPlayers();
+
+		localOutlineFeather = config.localOutlineFeather();
+		localOutlineWidth = config.localOutlineWidth();
+
+		othersOutlineFeather = config.othersOutlineFeather();
+		othersOutlineWidth = config.othersOutlineWidth();
 	}
 
 }
