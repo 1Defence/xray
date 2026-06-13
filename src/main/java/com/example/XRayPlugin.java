@@ -144,10 +144,10 @@ public class XRayPlugin extends Plugin
 				if (renderable instanceof Player)
 				{
 					Player player = (Player)renderable;
-					if(player == client.getLocalPlayer() && config.highlightLocalPlayer()){
+					if(player == client.getLocalPlayer() && highlightLocalPlayer){
 						return false;
 					}
-					if(player != client.getLocalPlayer() && config.highlightOtherPlayers()){
+					if(player != client.getLocalPlayer() && highlightOtherPlayers){
 						return false;
 					}
 				}
