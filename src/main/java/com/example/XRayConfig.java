@@ -50,6 +50,9 @@ public interface XRayConfig extends Config
 	@ConfigSection(name="Player Style", description="Player settings", position=4, closedByDefault=true)
 	String playerSection = "playerStyle";
 
+	@ConfigSection(name="Misc Settings", description="Misc settings", position=5, closedByDefault=true)
+	String miscSection = "miscSettings";
+
 	@ConfigItem(
 			position = 0,
 			keyName = "outlineNpcs",
@@ -245,7 +248,20 @@ public interface XRayConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 13,
+			position = 14,
+			keyName = "hideLocalPlayers2D",
+			name = "Hide Local 2D",
+			description = "Hides local player 2D",
+			section = playerSection
+	)
+
+	default boolean hideLocalPlayer2D()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			position = 15,
 			keyName = "localOutlineWidth",
 			name = "Local width",
 			description = "Width of the local players outline",
@@ -262,7 +278,7 @@ public interface XRayConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 14,
+			position = 16,
 			keyName = "localOutlineFeather",
 			name = "Local feather",
 			description = "Specify between 0-4 how much of the model outline should be faded for the local player.",
@@ -278,7 +294,7 @@ public interface XRayConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 15,
+			position = 17,
 			keyName = "highlightOtherPlayers",
 			name = "Highlight Others",
 			description = "Highlights all other players (except the local player) indiscriminately",
@@ -291,7 +307,20 @@ public interface XRayConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 16,
+			position = 18,
+			keyName = "hideOtherPlayers2D",
+			name = "Hide others 2D",
+			description = "Hides all other players 2D (except the local player) indiscriminately",
+			section = playerSection
+	)
+
+	default boolean hideOtherPlayers2D()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			position = 19,
 			keyName = "othersOutlineWidth",
 			name = "Others width",
 			description = "Width of other players outline",
@@ -308,7 +337,7 @@ public interface XRayConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 17,
+			position = 20,
 			keyName = "othersOutlineFeather",
 			name = "Others feather",
 			description = "Specify between 0-4 how much of the model outline should be faded for other players.",
@@ -321,6 +350,32 @@ public interface XRayConfig extends Config
 	default int othersOutlineFeather()
 	{
 		return 0;
+	}
+
+	@ConfigItem(
+			position = 21,
+			keyName = "hideNPCs2D",
+			name = "Hide NPCs 2D",
+			description = "Hides highlighted npcs 2D",
+			section = miscSection
+	)
+
+	default boolean hideNPCs2D()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			position = 22,
+			keyName = "hideDeadNPCss",
+			name = "Hide Dead NPCs",
+			description = "Hides highlights of dead npcs",
+			section = miscSection
+	)
+
+	default boolean hideDeadNPCs()
+	{
+		return false;
 	}
 
 }

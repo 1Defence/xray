@@ -58,6 +58,8 @@ public class XRayOverlay extends Overlay
         plugin.trackedNpcs.forEach((npc, rt) -> {
             if(npc == null)
                 return;
+            if(plugin.hideDeadNPCs && npc.isDead())
+                return;
             if(rt.render(OUTLINE))
                 renderOutline(npc);
             if(rt.render(CLICKBOX))

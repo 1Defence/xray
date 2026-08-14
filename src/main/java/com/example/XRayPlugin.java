@@ -106,14 +106,17 @@ public class XRayPlugin extends Plugin
 	public RenderTypes playerRenderType;
 
 	public boolean highlightLocalPlayer;
+	public boolean hideLocalPlayer2D;
 	public boolean highlightOtherPlayers;
-
+	public boolean hideOtherPlayers2D;
 	public int localOutlineWidth;
 	public int localOutlineFeather;
 
 	public int othersOutlineWidth;
 	public int othersOutlineFeather;
 
+	public boolean hideNPCs2D;
+	public boolean hideDeadNPCs;
 
 	private final Set<String> LIST_CONFIGS = Set.of("outlineNpcs","clickboxNpcs","hullNpcs");
 
@@ -150,6 +153,30 @@ public class XRayPlugin extends Plugin
 					if(player != client.getLocalPlayer() && highlightOtherPlayers){
 						return false;
 					}
+				}
+			}
+			return true;
+		}
+		@Override
+		public boolean addEntity(Renderable renderable, boolean ui)
+		{
+			if(!ui)
+				return true;
+
+			if(renderable instanceof NPC){
+				NPC npc = (NPC)renderable;
+				if(hideNPCs2D && trackedNpcs.containsKey(npc)){
+					return false;
+				}
+			}
+			if (renderable instanceof Player)
+			{
+				Player player = (Player)renderable;
+				if(player == client.getLocalPlayer() && hideLocalPlayer2D){
+					return false;
+				}
+				if(player != client.getLocalPlayer() && hideOtherPlayers2D){
+					return false;
 				}
 			}
 			return true;
@@ -378,13 +405,18 @@ public class XRayPlugin extends Plugin
 		otherPlayersColor = config.otherPlayersColor();
 
 		highlightLocalPlayer = config.highlightLocalPlayer();
+		hideLocalPlayer2D = config.hideLocalPlayer2D();
 		highlightOtherPlayers = config.highlightOtherPlayers();
+		hideOtherPlayers2D = config.hideOtherPlayers2D();
 
 		localOutlineFeather = config.localOutlineFeather();
 		localOutlineWidth = config.localOutlineWidth();
 
 		othersOutlineFeather = config.othersOutlineFeather();
 		othersOutlineWidth = config.othersOutlineWidth();
+
+		hideNPCs2D = config.hideNPCs2D();
+		hideDeadNPCs = config.hideDeadNPCs();
 	}
 
 }
